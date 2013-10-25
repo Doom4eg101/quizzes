@@ -7,10 +7,11 @@ import java.util.List;
 
 
 
+
 import dao.UserDao;
 import dao.UserDaoJdbcImpl;
 import model.User;
-import exceptions.DBException;
+import exceptions.*;
 
 public class Main {
 
@@ -27,19 +28,22 @@ public class Main {
 
 	public static void main(String[] args) {
 		UserDao userDao = null;
-		
+		User u = new User ("Jackie", "jackiee@gmail.com");
 		try {
 			
 			userDao = new UserDaoJdbcImpl ();
-			long start = System.currentTimeMillis();
-			List<User> users = null;
-			for (int i = 0; i < 1000; i++){
-				users = userDao.getAllUsers();
-			}
-			long end = System.currentTimeMillis() - start;
-			printUsers(users);
-			System.out.println(end);
-		} catch (DBException e){
+			userDao.insertUser(u);
+			
+		} 
+		catch (NotUniqueEmailException e){
+			System.out.println(e.getMessage());
+		}
+		
+		catch (NotUniqueNameException e){
+			System.out.println(e.getMessage());
+		}
+		
+		catch (DBException e){
 			e.printStackTrace();
 		}
 	}
