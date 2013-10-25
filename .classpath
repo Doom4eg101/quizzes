@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="lib"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.26-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rostik/git/quizzes/quizProject/lib/c3p0-0.9.5-pre5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rostik/git/quizzes/quizProject/lib/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rostik/git/quizzes/quizProject/lib/jarjar-0.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rostik/git/quizzes/quizProject/lib/mchange-commons-java-0.2.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rostik/git/quizzes/quizProject/lib/mysql-connector-java-5.1.26-bin.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
