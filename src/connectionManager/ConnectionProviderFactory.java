@@ -1,7 +1,7 @@
 package connectionManager;
 
 public class ConnectionProviderFactory {
-	private enum chooseProvider {
+	public enum chooseProvider {
 		C3P0_POOL, JDBC_DEFAULT, PROXOOL_POOL;
 	}
 	

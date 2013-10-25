@@ -2,12 +2,6 @@ package quizProject;
 
 
 import java.util.List;
-
-
-
-
-
-
 import dao.UserDao;
 import dao.UserDaoJdbcImpl;
 import model.User;
@@ -28,21 +22,18 @@ public class Main {
 
 	public static void main(String[] args) {
 		UserDao userDao = null;
-		User u = new User ("Jackie", "jackiee@gmail.com");
+		List<User> users = null;
 		try {
-			
+		//	ConnectionProviderFactory.setConnectionProvider(ConnectionProviderFactory.chooseProvider.JDBC_DEFAULT);
 			userDao = new UserDaoJdbcImpl ();
-			userDao.insertUser(u);
-			
-		} 
-		catch (NotUniqueEmailException e){
-			System.out.println(e.getMessage());
-		}
-		
-		catch (NotUniqueNameException e){
-			System.out.println(e.getMessage());
-		}
-		
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < 1000; i++) {
+				users = userDao.getAllUsers();
+			}
+			long finish = System.currentTimeMillis() - start;
+			printUsers(users);
+			System.out.println(finish);
+		}	
 		catch (DBException e){
 			e.printStackTrace();
 		}

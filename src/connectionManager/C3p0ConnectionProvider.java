@@ -10,7 +10,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class C3p0ConnectionProvider implements ConnectionProvider {
 	
 	private Properties props;
-    private ComboPooledDataSource cpds;
+    private static ComboPooledDataSource cpds;
     
 	@Override
 	public Connection newConnection() throws SQLException {
@@ -59,11 +59,11 @@ public class C3p0ConnectionProvider implements ConnectionProvider {
 		props.setProperty("jdbcUrl", "jdbc:mysql://localhost:3306/java");
 		props.setProperty("username", "root");
 		props.setProperty("password", "1111");
-		props.setProperty("acquireIncrement", "10");
-		props.setProperty("initialPoolSize", "10");
-		props.setProperty("maxPoolSize", "200");
-		props.setProperty("minPoolSize", "5");
-		props.setProperty("maxStatements", "200");
+		props.setProperty("acquireIncrement", "5");
+		props.setProperty("initialPoolSize", "5");
+		props.setProperty("maxPoolSize", "20");
+		props.setProperty("minPoolSize", "3");
+		props.setProperty("maxStatements", "10");
 		
 		return props;
 	}
