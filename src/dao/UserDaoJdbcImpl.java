@@ -100,10 +100,12 @@ public class UserDaoJdbcImpl implements UserDao {
 			if (nameAlreadyExists (u.getName(), conn)){
 				throw new NotUniqueNameException ("Name " + u.getName() + " already exists");
 			}
+			
 			PreparedStatement ps = conn.prepareStatement(INSERT_USER_SQL);
 			ps.setString(1, u.getName());
 			ps.setString(2, u.getEmail());
 			ps.execute();
+			
 			conn.commit();
 		} catch (SQLException e) {
 			JdbcUtils.rollbackQuietly(conn);
@@ -116,25 +118,33 @@ public class UserDaoJdbcImpl implements UserDao {
 	}
 	
 	private boolean emailAlreadyExists (String email, Connection conn) {
+		ResultSet resultSet = null;
+		
 		try {
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery(SELECT_BY_EMAIL + "'" + email + "'");
-			return rs.next();
+			resultSet = st.executeQuery(SELECT_BY_EMAIL + "'" + email + "'");
+			return resultSet.next();
 		} catch (SQLException e) {
 			System.out.println("Error checking email");
 			e.printStackTrace();
+		} finally {
+			JdbcUtils.closeQuietly(resultSet);
 		}
+		
 		return false;
 	}
 	
 	private boolean nameAlreadyExists (String name, Connection conn) {
+		ResultSet resultSet = null;
 		try {
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery(SELECT_BY_NAME + "'" + name + "'");
-			return rs.next();
+			resultSet = st.executeQuery(SELECT_BY_NAME + "'" + name + "'");
+			return resultSet.next();
 		} catch (SQLException e) {
 			System.out.println("Error checking name");
 			e.printStackTrace();
+		} finally {
+			JdbcUtils.closeQuietly(resultSet);
 		}
 		return false;
 	}
@@ -148,10 +158,14 @@ public class UserDaoJdbcImpl implements UserDao {
 		ResultSet resultSet = null;
 		try {
 			conn = connectionProvider.newConnection();
+			conn.setAutoCommit(false);
+			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			
 			statement = conn.createStatement();
 			resultSet = statement.executeQuery(SELECT_BY_ID + id);
-
-			if (resultSet.next() == false) {
+			conn.commit();
+			
+			if (!resultSet.next()) {
 				return null;
 			}
 			String email = resultSet.getString("email");
@@ -160,6 +174,7 @@ public class UserDaoJdbcImpl implements UserDao {
 			u.setId(id);
 			return u;
 		} catch (SQLException e) {
+			JdbcUtils.rollbackQuietly(conn);
 			e.printStackTrace();
 			throw new DBSystemException("Can't get user" + id);
 		} finally {
@@ -169,14 +184,25 @@ public class UserDaoJdbcImpl implements UserDao {
 	}
 
 	@Override
-	public void deleteUserByid(int id) throws DBSystemException {
+	public boolean deleteUserByid(int id) throws DBSystemException {
 		Connection conn = null;
 		Statement statement = null;
 
 		try {
 			conn = connectionProvider.newConnection();
+			conn.setAutoCommit(false);
+			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			
 			statement = conn.createStatement();
-			statement.executeUpdate(DELETE_BY_ID + id);
+			
+			// return false if where is no such user
+			
+			if (statement.executeUpdate(DELETE_BY_ID + id) == 0){
+				return false;
+			} else {
+				return true;
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DBSystemException ("Can't delete user" + id);
@@ -186,28 +212,28 @@ public class UserDaoJdbcImpl implements UserDao {
 		}
 	}
 
-//	public void addUsers(List<User> users) throws DBSystemException {
-//		Connection conn = null;
-//		PreparedStatement ps = null;
-//
-//		try {
-//			conn = connectionProvider.newConnection();
-//			conn.setAutoCommit(false);
-//			ps = conn.prepareStatement(INSERT_USER_SQL);
-//			for (User u : users) {
-//				ps.setString(1, u.getName());
-//				ps.setString(2, u.getEmail());
-//				ps.addBatch();
-//			}
-//			ps.executeBatch();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			throw new DBSystemException("Can't add users");
-//		} finally {
-//			JdbcUtils.closeQuietly(ps);
-//			JdbcUtils.closeQuietly(conn);
-//		}
-//	}
+	public void addUsers(List<User> users) throws DBSystemException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+
+		try {
+			conn = connectionProvider.newConnection();
+			conn.setAutoCommit(false);
+			ps = conn.prepareStatement(INSERT_USER_SQL);
+			for (User u : users) {
+				ps.setString(1, u.getName());
+				ps.setString(2, u.getEmail());
+				ps.addBatch();
+			}
+			ps.executeBatch();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DBSystemException("Can't add users");
+		} finally {
+			JdbcUtils.closeQuietly(ps);
+			JdbcUtils.closeQuietly(conn);
+		}
+	}
 
 	public void deleteAllUsers() throws DBSystemException {
 		Connection conn = null;

@@ -14,9 +14,11 @@ public interface UserDao {
 	
 	public User getUserById (int id) throws DBSystemException;
 	
-	public void deleteUserByid (int id) throws DBSystemException;
+	public boolean deleteUserByid (int id) throws DBSystemException;
 
 	public void deleteAllUsers() throws DBSystemException;
+	
+	public void addUsers(List<User> users) throws DBSystemException;
 	
 }
  
